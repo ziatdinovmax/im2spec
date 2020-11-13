@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -16,7 +18,7 @@ class dilated_block(nn.Module):
         Initializes module parameters
         """
         super(dilated_block, self).__init__()
-        conv_ = nn.Conv1d if ndim < 2 else nn.Conv2d 
+        conv_ = nn.Conv1d if ndim < 2 else nn.Conv2d
         atrous_module = []
         for idx, (dil, pad) in enumerate(zip(dilation_values, padding_values)):
             input_channels = output_channels if idx > 0 else input_channels
@@ -63,7 +65,7 @@ class conv_block(nn.Module):
         """
         super(conv_block, self).__init__()
 
-        conv_ = nn.Conv1d if ndim < 2 else nn.Conv2d 
+        conv_ = nn.Conv1d if ndim < 2 else nn.Conv2d
         block = []
         for idx in range(nb_layers):
             input_channels = output_channels if idx > 0 else input_channels
@@ -122,7 +124,7 @@ class im2spec(nn.Module):
             input_channels=self.d_filt, output_channels=1,
             lrelu_a=0.1, use_batchnorm=True)
         self.dec_out = nn.Conv1d(1, 1, 1)
-            
+
     def encoder(self, features: torch.Tensor) -> torch.Tensor:
         """
         The encoder embeddes the input image into a latent vector
@@ -130,7 +132,7 @@ class im2spec(nn.Module):
         x = self.enc_conv(features)
         x = x.reshape(-1, self.e_filt * self.m * self.n)
         return self.enc_fc(x)
-    
+
     def decoder(self, encoded: torch.Tensor) -> torch.Tensor:
         """
         The decoder generates 1D signal from the embedded features
@@ -145,7 +147,7 @@ class im2spec(nn.Module):
         """Forward model"""
         encoded = self.encoder(x)
         return self.decoder(encoded)
-        
+
 
 class spec2im(nn.Module):
     """
@@ -187,7 +189,7 @@ class spec2im(nn.Module):
             input_channels=self.d_filt, output_channels=1,
             lrelu_a=0.1, use_batchnorm=True)
         self.dec_out = nn.Conv2d(1, 1, 1)
-            
+
     def encoder(self, features: torch.Tensor) -> torch.Tensor:
         """
         The encoder embeddes the imput signal into a latent vector
@@ -195,7 +197,7 @@ class spec2im(nn.Module):
         x = self.enc_conv(features)
         x = x.reshape(-1, self.e_filt * self.fs)
         return self.enc_fc(x)
-    
+
     def decoder(self, encoded: torch.Tensor) -> torch.Tensor:
         """
         The decoder generates 2D image from the embedded features
