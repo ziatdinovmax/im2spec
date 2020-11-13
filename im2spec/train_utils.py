@@ -1,7 +1,7 @@
 from typing import Type
 import torch
 import numpy as np
-from utils import init_dataloaders
+from .utils import init_dataloaders
 
 
 class trainer:
